@@ -63,7 +63,7 @@ function Vec.__len(self: Vec<any>): number
 	return #self._array
 end
 function Vec.__iter(self: Vec<any>)
-	return ipairs, self._array
+	return ipairs :: any, self._array
 end
 
 function Vec:drain(): { any }
