@@ -20,6 +20,9 @@ type VecImpl<V> = {
 
 type MutVecImpl<V> = {
 	__index: MutVecImpl<V>,
+	__tostring: (self: MutVec<V>) -> string,
+	__len: (self: MutVec<V>) -> number,
+	__iter: (self: MutVec<V>) -> (typeof(ipairs), { V }),
 	append: (self: MutVec<V>, vec: Vec<V>) -> (),
 	drain: (self: Vec<V>) -> { V },
 	clear: (self: MutVec<V>) -> (),
@@ -93,6 +96,16 @@ function Vec:asMut(): MutVec<any>
 	}, MutVec) :: any
 	table.freeze(out)
 	return out
+end
+
+function MutVec.__tostring(self: MutVec<any>): string
+	return "MutVec(" .. table.concat(self._array, ", ") .. ")"
+end
+function MutVec.__len(self: MutVec<any>): number
+	return #self._array
+end
+function MutVec.__iter(self: MutVec<any>)
+	return ipairs :: any, self._array
 end
 
 function MutVec:append(vec: Vec<any>)
