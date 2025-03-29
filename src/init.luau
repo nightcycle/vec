@@ -256,4 +256,16 @@ return {
 		table.freeze(self)
 		return self
 	end,
+	isVec = function(value: unknown?): boolean
+		if typeof(value) == "table" then
+			return getmetatable(value :: any) == Vec
+		end
+		return false
+	end,
+	isMutVec = function(value: unknown?): boolean
+		if typeof(value) == "table" then
+			return getmetatable(value :: any) == MutVec
+		end
+		return false
+	end,
 }
