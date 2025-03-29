@@ -9,7 +9,7 @@ type VecImpl<V> = {
 	__index: VecImpl<V>,
 	__tostring: (self: Vec<V>) -> string,
 	__len: (self: Vec<V>) -> number,
-	__iter: (self: Vec<V>) -> ({ V }) -> (({ V }, number) -> (number?, V), { V }, number),
+	__iter: (self: Vec<V>) -> (typeof(ipairs), { V }),
 	drain: (self: Vec<V>) -> { V },
 	contains: (self: Vec<V>, value: V) -> boolean,
 	isEmpty: (self: Vec<V>) -> boolean,
