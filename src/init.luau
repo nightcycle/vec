@@ -230,7 +230,7 @@ return {
 		table.freeze(self)
 		return self
 	end,
-	from = function<V>(initial: { V })
+	from = function<V>(initial: { V }): Vec<V>
 		local array: { V } = if table.isfrozen(initial) then initial else table.clone(initial)
 		if not table.isfrozen(array) then
 			table.freeze(array)
@@ -241,10 +241,10 @@ return {
 		table.freeze(self)
 		return self
 	end,
-	fromMut = function<V>(initial: { V })
+	fromMut = function<V>(initial: { V }): MutVec<V>
 		local self = setmetatable({
 			_array = table.clone(initial),
-		}, MutVec)
+		}, MutVec) :: any
 		table.freeze(self)
 		return self
 	end,
