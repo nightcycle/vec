@@ -83,9 +83,11 @@ function Vec:isMut(): false
 end
 
 function Vec:asMut(): MutVec<any>
-	return setmetatable({
+	local out = setmetatable({
 		_array = table.clone(self._array),
 	}, MutVec) :: any
+	table.freeze(out)
+	return out
 end
 
 function MutVec:append(vec: Vec<any>)
