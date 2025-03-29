@@ -9,7 +9,7 @@ type VecImpl<V> = {
 	__index: VecImpl<V>,
 	__tostring: (self: Vec<V>) -> string,
 	__len: (self: Vec<V>) -> number,
-	__iter: (self: Vec<V>) -> (typeof(ipairs), { V }),
+	__iter: (self: Vec<V>) -> (typeof(next), { V }),
 	drain: (self: Vec<V>) -> { V },
 	get: (self: Vec<V>, index: number) -> Option<V>,
 	contains: (self: Vec<V>, value: V) -> boolean,
@@ -22,7 +22,7 @@ type MutVecImpl<V> = {
 	__index: MutVecImpl<V>,
 	__tostring: (self: MutVec<V>) -> string,
 	__len: (self: MutVec<V>) -> number,
-	__iter: (self: MutVec<V>) -> (typeof(ipairs), { V }),
+	__iter: (self: MutVec<V>) -> (typeof(next), { V }),
 	append: (self: MutVec<V>, vec: Vec<V>) -> (),
 	drain: (self: Vec<V>) -> { V },
 	clear: (self: MutVec<V>) -> (),
@@ -67,7 +67,7 @@ function Vec.__len(self: Vec<any>): number
 	return #self._array
 end
 function Vec.__iter(self: Vec<any>)
-	return ipairs :: any, self._array
+	return next :: any, self._array
 end
 
 function Vec:get(index: number): Option<any>
@@ -105,7 +105,7 @@ function MutVec.__len(self: MutVec<any>): number
 	return #self._array
 end
 function MutVec.__iter(self: MutVec<any>)
-	return ipairs :: any, self._array
+	return next :: any, self._array
 end
 
 function MutVec:append(vec: Vec<any>)
