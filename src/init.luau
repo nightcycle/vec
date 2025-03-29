@@ -216,16 +216,35 @@ function MutVec:freeze(): Vec<any>
 end
 
 return {
+	emptyMut = function<V>(): MutVec<V>
+		local self = setmetatable({
+			_array = {},
+		}, MutVec) :: any
+		table.freeze(self)
+		return self
+	end,
+	empty = function<V>(): Vec<V>
+		local self = setmetatable({
+			_array = table.freeze({}),
+		}, Vec)
+		table.freeze(self)
+		return self
+	end,
 	from = function<V>(initial: { V })
-		local array: { V } = if initial ~= nil
-			then if table.isfrozen(initial) then initial else table.clone(initial)
-			else {}
+		local array: { V } = if table.isfrozen(initial) then initial else table.clone(initial)
 		if not table.isfrozen(array) then
 			table.freeze(array)
 		end
 		local self = setmetatable({
 			_array = array,
 		}, Vec)
+		table.freeze(self)
+		return self
+	end,
+	fromMut = function<V>(initial: { V })
+		local self = setmetatable({
+			_array = table.clone(initial),
+		}, MutVec)
 		table.freeze(self)
 		return self
 	end,
