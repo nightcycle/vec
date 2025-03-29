@@ -11,10 +11,12 @@ type VecImpl<V> = {
 	__len: (self: Vec<V>) -> number,
 	__iter: (self: Vec<V>) -> (typeof(ipairs), { V }),
 	drain: (self: Vec<V>) -> { V },
+	get: (self: Vec<V>, index: number) -> Option<V>,
 	contains: (self: Vec<V>, value: V) -> boolean,
 	isEmpty: (self: Vec<V>) -> boolean,
 	isMut: (self: Vec<V>) -> false,
 	asMut: (self: Vec<V>) -> MutVec<V>,
+	[number]: never,
 }
 
 type MutVecImpl<V> = {
@@ -35,11 +37,13 @@ type MutVecImpl<V> = {
 	popIf: (self: MutVec<V>, predicate: (value: V) -> boolean) -> Option<V>,
 	isMut: (self: MutVec<V>) -> true,
 	freeze: (self: MutVec<V>) -> Vec<V>,
+	[number]: never,
 }
 
 export type Vec<V> = typeof(setmetatable(
 	{} :: {
 		_array: { V },
+		[number]: never,
 	},
 	{} :: VecImpl<V>
 ))
@@ -64,6 +68,10 @@ function Vec.__len(self: Vec<any>): number
 end
 function Vec.__iter(self: Vec<any>)
 	return ipairs :: any, self._array
+end
+
+function Vec:get(index: number): Option<any>
+	return Option.from(self._array[index])
 end
 
 function Vec:drain(): { any }
