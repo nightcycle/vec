@@ -16,7 +16,6 @@ type VecImpl<V> = {
 	isEmpty: (self: Vec<V>) -> boolean,
 	isMut: (self: Vec<V>) -> false,
 	asMut: (self: Vec<V>) -> MutVec<V>,
-	[number]: never,
 }
 
 type MutVecImpl<V> = {
@@ -37,13 +36,11 @@ type MutVecImpl<V> = {
 	popIf: (self: MutVec<V>, predicate: (value: V) -> boolean) -> Option<V>,
 	isMut: (self: MutVec<V>) -> true,
 	freeze: (self: MutVec<V>) -> Vec<V>,
-	[number]: never,
 }
 
 export type Vec<V> = typeof(setmetatable(
 	{} :: {
 		_array: { V },
-		[number]: never,
 	},
 	{} :: VecImpl<V>
 ))
