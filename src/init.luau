@@ -66,7 +66,7 @@ MutVec.__index = MutVec
 setmetatable(MutVec, Vec)
 
 function Vec.__tostring(self: Vec<any>): string
-	return "Vec(" .. Error.displayAsJson(self) .. ")"
+	return "Vec(" .. Error.displayAsJson(self._array) .. ")"
 end
 function Vec.__len(self: Vec<any>): number
 	return #self._array
