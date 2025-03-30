@@ -2,6 +2,7 @@
 -- Services
 -- Packages
 local Option = require("@wally/Option")
+local Error = require("@wally/Error")
 -- Modules
 -- Types
 type Option<V> = Option.Option<V>
@@ -9,7 +10,7 @@ type VecImpl<V> = {
 	__index: VecImpl<V>,
 	__tostring: (self: Vec<V>) -> string,
 	__len: (self: Vec<V>) -> number,
-	__iter: (self: Vec<V>) -> (typeof(next), { V }),
+	-- __iter: (self: Vec<V>) -> (typeof(next), { V }),
 	drain: (self: Vec<V>) -> { V },
 	get: (self: Vec<V>, index: number) -> Option<V>,
 	contains: (self: Vec<V>, value: V) -> boolean,
@@ -22,7 +23,7 @@ type MutVecImpl<V> = {
 	__index: MutVecImpl<V>,
 	__tostring: (self: MutVec<V>) -> string,
 	__len: (self: MutVec<V>) -> number,
-	__iter: (self: MutVec<V>) -> (typeof(next), { V }),
+	-- __iter: (self: MutVec<V>) -> (typeof(next), { V }),
 	append: (self: MutVec<V>, vec: Vec<V>) -> (),
 	drain: (self: Vec<V>) -> { V },
 	clear: (self: MutVec<V>) -> (),
@@ -40,14 +41,18 @@ type MutVecImpl<V> = {
 	isMut: (self: MutVec<V>) -> true,
 	freeze: (self: MutVec<V>) -> Vec<V>,
 }
-
 export type Vec<V> = typeof(setmetatable(
 	{} :: {
 		_array: { V },
 	},
 	{} :: VecImpl<V>
 ))
-export type MutVec<V> = typeof(setmetatable({} :: {}, {} :: MutVecImpl<V>)) & Vec<V>
+export type MutVec<V> = typeof(setmetatable(
+	{} :: {
+		_array: { V },
+	},
+	{} :: MutVecImpl<V>
+)) & Vec<V>
 -- Constants
 -- Variables
 -- References
@@ -61,7 +66,7 @@ MutVec.__index = MutVec
 setmetatable(MutVec, Vec)
 
 function Vec.__tostring(self: Vec<any>): string
-	return "Vec(" .. table.concat(self._array, ", ") .. ")"
+	return "Vec(" .. Error.displayAsJson(self) .. ")"
 end
 function Vec.__len(self: Vec<any>): number
 	return #self._array
