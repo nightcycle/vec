@@ -104,7 +104,7 @@ function Vec:asMut(): MutVec<any>
 end
 
 function MutVec.__tostring(self: MutVec<any>): string
-	return "MutVec(" .. table.concat(self._array, ", ") .. ")"
+	return "MutVec(" .. Error.displayAsJson(self._array) .. ")"
 end
 function MutVec.__len(self: MutVec<any>): number
 	return #self._array
