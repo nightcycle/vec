@@ -1,8 +1,8 @@
 --!strict
 -- Services
 -- Packages
-local Option = require("@wally/Option")
-local Error = require("@wally/Error")
+local Option = require("@pkg/@nightcycle/option")
+local Error = require("@pkg/@nightcycle/error")
 -- Modules
 -- Types
 type Option<V> = Option.Option<V>
@@ -213,12 +213,14 @@ end
 
 function MutVec:popIf(predicate: (value: any) -> boolean): Option<any>
 	local target = Option.from(self._array[#self._array])
-	return target:map(function(v)
+	return target:match(function(v)
 		if predicate(v) then
 			return self:pop()
 		else
 			return Option.none()
 		end
+	end, function()
+		return Option.none()
 	end)
 end
 
