@@ -41,18 +41,20 @@ type MutVecImpl<V> = {
 	isMut: (self: any) -> true,
 	freeze: (self: any) -> Vec<V>,
 }
-export type Vec<V> = typeof(setmetatable(
-	{} :: {
-		_array: { V },
-	},
-	{} :: VecImpl<V>
-))
-export type MutVec<V> = typeof(setmetatable(
-	{} :: {
-		_array: { V },
-	},
-	{} :: MutVecImpl<V>
-)) & Vec<V>
+export type Vec<V> = VecImpl<V>
+-- typeof(setmetatable(
+-- 	{} :: {
+-- 		_array: { V },
+-- 	},
+-- 	{} :: VecImpl<V>
+-- ))
+export type MutVec<V> = MutVecImpl<V> & Vec<V>
+-- typeof(setmetatable(
+-- 	{} :: {
+-- 		_array: { V },
+-- 	},
+-- 	{} :: MutVecImpl<V>
+-- )) & Vec<V>
 -- Constants
 -- Variables
 -- References
@@ -65,13 +67,13 @@ local MutVec = {} :: MutVecImpl<any>
 MutVec.__index = MutVec
 setmetatable(MutVec, Vec)
 
-function Vec.__tostring(self: Vec<any>): string
+function Vec.__tostring(self): string
 	return "Vec(" .. Error.displayAsJson(self._array) .. ")"
 end
-function Vec.__len(self: Vec<any>): number
+function Vec.__len(self): number
 	return #self._array
 end
-function Vec.__iter(self: Vec<any>)
+function Vec.__iter(self)
 	return next :: any, self._array
 end
 
@@ -103,13 +105,13 @@ function Vec:asMut(): MutVec<any>
 	return out
 end
 
-function MutVec.__tostring(self: MutVec<any>): string
+function MutVec.__tostring(self): string
 	return "MutVec(" .. Error.displayAsJson(self._array) .. ")"
 end
-function MutVec.__len(self: MutVec<any>): number
+function MutVec.__len(self): number
 	return #self._array
 end
-function MutVec.__iter(self: MutVec<any>)
+function MutVec.__iter(self)
 	return next :: any, self._array
 end
 
@@ -237,7 +239,7 @@ function MutVec:freeze(): Vec<any>
 		_array = table.freeze(table.clone(self._array)),
 	}, Vec)
 	table.freeze(selfFrozen)
-	return selfFrozen
+	return selfFrozen :: any
 end
 
 return {
@@ -253,7 +255,7 @@ return {
 			_array = table.freeze({}),
 		}, Vec)
 		table.freeze(self)
-		return self
+		return self :: any
 	end,
 	from = function<V>(initial: { V }): Vec<V>
 		local array: { V } = if table.isfrozen(initial) then initial else table.clone(initial)
@@ -264,7 +266,7 @@ return {
 			_array = array,
 		}, Vec)
 		table.freeze(self)
-		return self
+		return self :: any
 	end,
 	fromMut = function<V>(initial: { V }): MutVec<V>
 		local self = setmetatable({
