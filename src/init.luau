@@ -7,23 +7,37 @@ local Error = require("@pkg/@nightcycle/error")
 -- Types
 type Option<V> = Option.Option<V>
 type VecImpl<V> = {
-	__index: VecImpl<V>,
-	__tostring: (self: any) -> string,
-	__len: (self: any) -> number,
-	__iter: (self: any) -> (typeof(next), { V }),
+	-- __index: VecImpl<V>,
+	-- __tostring: (self: any) -> string,
+	-- __len: (self: any) -> number,
+	-- __iter: (self: any) -> (typeof(next), { V }),
+	display: (self: any) -> string,
+	len: (self: any) -> number,
 	drain: (self: any) -> { V },
 	get: (self: any, index: number) -> Option<V>,
 	contains: (self: any, value: V) -> boolean,
 	isEmpty: (self: any) -> boolean,
 	isMut: (self: any) -> false,
 	asMut: (self: any) -> MutVec<V>,
+	forEach: (self: any, callback: (value: V) -> ()) -> (),
+	forEachPair: (self: any, callback: (index: number, value: V) -> ()) -> (),
+	matchPair: <T>(self: any, callback: (index: number, value: V) -> Option<T>) -> Option<T>,
 }
 
 type MutVecImpl<V> = {
-	__index: MutVecImpl<V>,
-	__tostring: (self: any) -> string,
-	__len: (self: any) -> number,
-	__iter: (self: any) -> (typeof(next), { V }),
+	display: (self: any) -> string,
+	len: (self: any) -> number,
+	get: (self: any, index: number) -> Option<V>,
+	contains: (self: any, value: V) -> boolean,
+	isEmpty: (self: any) -> boolean,
+	isMut: (self: any) -> true,
+	forEach: (self: any, callback: (value: V) -> ()) -> (),
+	forEachPair: (self: any, callback: (index: number, value: V) -> ()) -> (),
+	matchPair: <T>(self: any, callback: (index: number, value: V) -> Option<T>) -> Option<T>,
+	-- __index: MutVecImpl<V>,
+	-- __tostring: (self: any) -> string,
+	-- __len: (self: any) -> number,
+	-- __iter: (self: any) -> (typeof(next), { V }),
 	append: (self: any, vec: Vec<V>) -> (),
 	drain: (self: any) -> { V },
 	clear: (self: any) -> (),
@@ -38,7 +52,6 @@ type MutVecImpl<V> = {
 	pop: (self: any) -> Option<V>,
 	sort: (self: any, comparator: (a: V, b: V) -> boolean) -> () & (self: any) -> (),
 	popIf: (self: any, predicate: (value: V) -> boolean) -> Option<V>,
-	isMut: (self: any) -> true,
 	freeze: (self: any) -> Vec<V>,
 }
 export type Vec<V> = VecImpl<V>
@@ -48,7 +61,7 @@ export type Vec<V> = VecImpl<V>
 -- 	},
 -- 	{} :: VecImpl<V>
 -- ))
-export type MutVec<V> = MutVecImpl<V> & Vec<V>
+export type MutVec<V> = MutVecImpl<V>
 -- typeof(setmetatable(
 -- 	{} :: {
 -- 		_array: { V },
@@ -61,19 +74,50 @@ export type MutVec<V> = MutVecImpl<V> & Vec<V>
 -- Private Functions
 -- Class
 local Vec = {} :: VecImpl<any>
-Vec.__index = Vec
+local DeprecatedVec = Vec :: any
+DeprecatedVec.__index = Vec
 
 local MutVec = {} :: MutVecImpl<any>
-MutVec.__index = MutVec
+local DeprecatedMutVec = MutVec :: any
+DeprecatedMutVec.__index = MutVec
 setmetatable(MutVec, Vec)
 
-function Vec.__tostring(self): string
-	return "Vec(" .. Error.displayAsJson(self._array) .. ")"
+function DeprecatedVec.__tostring(self): string
+	return self:display()
 end
-function Vec.__len(self): number
+function DeprecatedVec.__len(self): number
 	return #self._array
 end
-function Vec.__iter(self)
+function Vec:display()
+	return "Vec(" .. Error.displayAsJson(self._array) .. ")"
+end
+function Vec:len()
+	return #self._array
+end
+
+function Vec:forEach(callback: (value: any) -> ())
+	for i, value in ipairs(self._map) do
+		callback(value)
+	end
+end
+
+function Vec:forEachPair(callback: (i: any, value: any) -> ())
+	for i, value in ipairs(self._map) do
+		callback(i, value)
+	end
+end
+
+function Vec:matchPair<T>(callback: (i: any, value: any) -> Option<T>): Option<T>
+	for i, value in ipairs(self._map) do
+		local opt = callback(i, value)
+		if opt:isSome() then
+			return opt
+		end
+	end
+	return Option.none()
+end
+
+function DeprecatedVec.__iter(self)
 	return next :: any, self._array
 end
 
@@ -105,20 +149,24 @@ function Vec:asMut(): MutVec<any>
 	return out
 end
 
-function MutVec.__tostring(self): string
-	return "MutVec(" .. Error.displayAsJson(self._array) .. ")"
+function DeprecatedMutVec.__tostring(self): string
+	return self:display()
 end
-function MutVec.__len(self): number
+function DeprecatedMutVec.__len(self): number
 	return #self._array
 end
-function MutVec.__iter(self)
+function DeprecatedMutVec.__iter(self)
 	return next :: any, self._array
 end
 
-function MutVec:append(vec: Vec<any>)
+function DeprecatedMutVec:append(vec: Vec<any>)
 	for i, v in vec do
 		table.insert(self._array, v)
 	end
+end
+
+function MutVec:display()
+	return "MutVec(" .. Error.displayAsJson(self._array) .. ")"
 end
 
 function MutVec:extend(array: { any })
