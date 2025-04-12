@@ -96,19 +96,19 @@ function Vec:len()
 end
 
 function Vec:forEach(callback: (value: any) -> ())
-	for i, value in ipairs(self._map) do
+	for i, value in ipairs(self._array) do
 		callback(value)
 	end
 end
 
 function Vec:forEachPair(callback: (i: any, value: any) -> ())
-	for i, value in ipairs(self._map) do
+	for i, value in ipairs(self._array) do
 		callback(i, value)
 	end
 end
 
 function Vec:matchPair<T>(callback: (i: any, value: any) -> Option<T>): Option<T>
-	for i, value in ipairs(self._map) do
+	for i, value in ipairs(self._array) do
 		local opt = callback(i, value)
 		if opt:isSome() then
 			return opt
